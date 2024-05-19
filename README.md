@@ -1,10 +1,10 @@
 # Hello World
 
-This Solidity program is a simple "Hello World" program that demonstrates the basic syntax and functionality of the Solidity programming language. The purpose of this program is to serve as a starting point for those who are new to Solidity and want to get a feel for how it works.
+This Solidity program is aa smart contract that implements the require(), assert() and revert() statements. The purpose of this program is to serve as a starting point for those who are new to Solidity and want to get a feel for how it works.
 
 ## Description
 
-This program is a simple contract written in Solidity, a programming language used for developing smart contracts on the Ethereum blockchain. The contract has a single function that returns the string "Hello World!". This program serves as a simple and straightforward introduction to Solidity programming, and can be used as a stepping stone for more complex projects in the future.
+This program is a simple contract written in Solidity, a programming language used for developing smart contracts on the Ethereum blockchain. The contract a smart contract that implements the require(), assert() and revert() statements. This program serves as a simple and straightforward introduction to Solidity programming, and can be used as a stepping stone for more complex projects in the future.
 
 ## Getting Started
 
@@ -12,29 +12,55 @@ This program is a simple contract written in Solidity, a programming language us
 
 To run this program, you can use Remix, an online Solidity IDE. To get started, go to the Remix website at https://remix.ethereum.org/.
 
-Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., HelloWorld.sol). Copy and paste the following code into the file:
+Once you are on the Remix website, create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., SmartContract.sol). Copy and paste the following code into the file:
 
 ```javascript
-pragma solidity ^0.8.4;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-contract HelloWorld {
-    function sayHello() public pure returns (string memory) {
-        return "Hello World!";
+contract GcashPayment {
+    address public accountUser;  // Setting 'accountUser' as the owner
+    mapping(address => uint256) public userBalance;
+    uint256 public constant maxBalance = 10000;
+
+    constructor() {
+        accountUser = msg.sender;  // Initializing 'accountUser' as the contract deployer
     }
-}
 
+    function deposit(uint256 _amount) public payable {
+        require(_amount > 0, "Value must be greater than 0");  // Ensuring our deposit amount to be greater than 0
+        require(userBalance[msg.sender] + _amount <= maxBalance, "Amount is bigger than the maximun balance");
+        userBalance[msg.sender] += _amount;
+        assert(userBalance[msg.sender] <= maxBalance); // Asserting the account balance after or if the deposited amount exceeds the maximum amount
+    }
+
+    function withdraw(uint256 _amount) public {
+        require(_amount > 0, "Withdrawal amount should be greater than 0");  // Ensuring our withdrawal amount to be greater than 0
+        require(userBalance[msg.sender] >= _amount, "You have insufficient balance");  // Checking if the sender has enough balance
+
+        userBalance[msg.sender] -= _amount;  // Updating the balance mapping for the sender
+
+        require(payable(msg.sender).send(_amount), "Withdrawal failed");
+    }
+
+    function checkBalance(address _accountUser) public view returns(uint256) {
+        require(userBalance[_accountUser] > 0, "User has no Balance");
+        return userBalance[_accountUser];
+    }
+
+
+}
 ```
 
-To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.4" (or another compatible version), and then click on the "Compile HelloWorld.sol" button.
+To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to "0.8.4" (or another compatible version), and then click on the "Compile SmartContract.sol" button.
 
-Once the code is compiled, you can deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the "HelloWorld" contract from the dropdown menu, and then click on the "Deploy" button.
+Once the code is compiled, you can deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the "SmartContact" contract from the dropdown menu, and then click on the "Deploy" button.
 
-Once the contract is deployed, you can interact with it by calling the sayHello function. Click on the "HelloWorld" contract in the left-hand sidebar, and then click on the "sayHello" function. Finally, click on the "transact" button to execute the function and retrieve the "Hello World!" message.
+Once you clicked on the "Deploy button", another set of functions will appear on the lower part. There, you can imput amount for deposit, withdrawal, and you can also check balances.
 
 ## Authors
 
-Metacrafter Chris  
-[@metacraftersio](https://twitter.com/metacraftersio)
+Kleyn 
 
 
 ## License
